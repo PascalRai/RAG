@@ -1,0 +1,6 @@
+/dev/*
+/qdrant_storage/*
+/pgdata/*
+/eval/*
+.env
+*.pyc

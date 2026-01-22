@@ -1,0 +1,10 @@
+docling
+qdrant_client
+langchain-openai
+pydantic-settings
+fastapi[standard]
+celery
+uvicorn
+gunicorn
+neo4j
+langchain[openai]

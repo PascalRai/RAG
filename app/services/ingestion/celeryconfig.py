@@ -1,0 +1,9 @@
+task_serializer = 'json'
+result_serializer = 'json'
+accept_content = ['json'] # task serializer so accepts
+timezone = 'UTC'
+enable_utc = True
+worker_prefetch_multiplier = 1 # Only one-task at a time per worker
+task_acks_late = True # acknowledge task completed; re-schedule if not
+task_time_limit = 600 # max 10 mins per task
+worker_max_tasks_per_child = 50 # restart worker after 50 tasks (mem leaks)
