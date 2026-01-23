@@ -1,7 +1,6 @@
 from celery import Celery
 
 from app.core.settings import settings
-from app.services.ingestion.ingestion_task_pipeline import ingestion_pipeline
 
 # Configure the Celery app
 celery_app = Celery(
@@ -18,6 +17,7 @@ celery_app.config_from_object("app.services.ingestion.celeryconfig")
     retry_backoff=True
 )
 def ingestion_task(file_path: str, index_name: str):
+    from app.services.ingestion.ingestion_task_pipeline import ingestion_pipeline
     return ingestion_pipeline(file_path, index_name)
 
 # celery -A app.services.ingestion.ingestion_task.celery_app worker --loglevel=info --concurrency=1

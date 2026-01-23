@@ -80,3 +80,21 @@ Indexing files into Qdrant
 The ingestion/indexing worker is isolated from the web upload endpoints. For now, upload files by placing them into a shared data/ directory in the repo root. Map that directory as a volume to the celery worker in docker-compose so the worker can read the files and index them into Qdrant.
 
 Example: place files under ./data/ and use the worker-side path in ingestion tasks to start indexing.
+
+Indexing files into Qdrant
+
+The ingestion/indexing worker is isolated from the web upload endpoints. For now, upload files by placing them into a shared data/ directory in the repo root. Map that directory as a volume to the celery worker in docker-compose so the worker can read the files and index them into Qdrant.
+
+Example: place files under ./data/ and use the worker-side path in ingestion tasks to start indexing.
+
+To trigger ingestion via the API, use the following curl command (replace `asdf` with your desired index name and adjust the file path):
+
+```bash
+curl -X 'POST' \
+  'http://localhost:8000/api/v1/indexes/asdf/pdf' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "file_path": "data/docs/2022 Q3 AAPL.pdf"
+}'
+```

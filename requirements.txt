@@ -1,4 +1,4 @@
-docling
+# docling
 qdrant_client
 langchain-openai
 pydantic-settings
