@@ -5,10 +5,10 @@ class Settings(BaseSettings):
     openai_api_key: str = ""
     model_id: str = "text-embedding-3-small"
     
-    qdrant_url: str = "http://localhost:6333"
-    postgres_uri: str = "postgresql://postgres:postgres@postgres:5432/postgres"
+    qdrant_url: str = "http://qdrant:6333"
+    # postgres_uri: str = "postgresql://postgres:postgres@postgres:5432/postgres"
 
-    celery_broker_url: str = "amqp://user:password@localhost:5672//"
+    celery_broker_url: str = "amqp://user:password@celery_worker:5672//"
     celery_result_backend: str = "rpc://"
 
     class Config:

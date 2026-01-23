@@ -6,5 +6,4 @@ fastapi[standard]
 celery
 uvicorn
 gunicorn
-neo4j
 langchain[openai]
