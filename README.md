@@ -1,5 +1,14 @@
 # RAG — FastAPI + Celery + Qdrant
 
+![Architecture](./data/RAG.png)
+
+Components used
+- Qdrant — vector database (qdrant/qdrant)
+- RabbitMQ — message broker for Celery (rabbitmq:3-management)
+- Celery — background worker for ingestion/indexing
+- FastAPI — HTTP API (served with Gunicorn + UvicornWorker)
+- Streamlit — local UI (run outside Docker)
+
 Overview
 - RAG is a retrieval-augmented generation backend composed of a FastAPI server and a Celery worker that share the same Docker image. Qdrant is used as the vector DB and RabbitMQ as the Celery broker. A Streamlit UI is provided to interact locally.
 
@@ -24,12 +33,6 @@ app/
   - ingestion_task_pipeline.py, ingestion_task_utils.py — ingestion pipeline helpers
   - celeryconfig.py — celery configuration
 ```
-Components used
-- Qdrant — vector database (qdrant/qdrant)
-- RabbitMQ — message broker for Celery (rabbitmq:3-management)
-- Celery — background worker for ingestion/indexing
-- FastAPI — HTTP API (served with Gunicorn + UvicornWorker)
-- Streamlit — local UI (run outside Docker)
 
 Environment (.env)
 - Place a single `.env` in the RAG directory (shared by fastapi and celery_worker).
