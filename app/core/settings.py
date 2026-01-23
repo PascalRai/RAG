@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     qdrant_url: str = "http://qdrant:6333"
     # postgres_uri: str = "postgresql://postgres:postgres@postgres:5432/postgres"
 
-    celery_broker_url: str = "amqp://user:password@celery_worker:5672//"
+    celery_broker_url: str = "amqp://user:password@rabbitmq:5672//"
     celery_result_backend: str = "rpc://"
 
     class Config:
