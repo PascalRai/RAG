@@ -29,5 +29,5 @@ if __name__=="__main__":
             continue
         ingestion_pipeline(
             filename=path,
-            index_name="test_01"
+            index_name="test_hybrid"
         )

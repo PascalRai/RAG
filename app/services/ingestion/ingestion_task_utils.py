@@ -1,6 +1,6 @@
 import re
 import uuid
-from qdrant_client import QdrantClient
+from qdrant_client import QdrantClient, models
 from qdrant_client.http.models import PointStruct
 from typing import Tuple, List, Dict
 from langchain_openai import OpenAIEmbeddings
@@ -72,7 +72,13 @@ def ingest_docs(documents: List[Dict],
         points.append(
             PointStruct(
                 id=deterministic_chunk_id(doc.get("metadata", {}), index_name),
-                vector=embeddings_list[i],
+                vector={
+                    "dense": embeddings_list[i],
+                    "bm25": models.Document(
+                        text=doc["text"],
+                        model="Qdrant/bm25",
+                    )
+                },
                 payload=doc
             )
         )

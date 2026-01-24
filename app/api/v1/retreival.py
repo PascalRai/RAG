@@ -3,7 +3,7 @@ from langchain_openai import OpenAIEmbeddings
 from fastapi import APIRouter, Depends, HTTPException
 
 from app.core.settings import settings
-from app.core.utils.retriever_utils import dense_retrieve
+from app.core.utils.retriever_utils import hydrid_retiever
 from app.schemas.retreival_schema import RetreivalRequest, RetrievalResponse
 
 router = APIRouter()
@@ -19,7 +19,7 @@ async def retrieve(
     request: RetreivalRequest,
     client: QdrantClient = Depends(get_qdrant_client),
 ):
-    response = await dense_retrieve(
+    response = await hydrid_retiever(
         client,
         collection_name=request.index_name,
         query=request.query,

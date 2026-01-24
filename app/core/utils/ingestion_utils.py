@@ -9,14 +9,20 @@ def ensure_collection(
         collection_name: str
         ) -> dict:
     result = {"collection": collection_name, "collection_status": None}
-    try:
+    try:        
         client.create_collection(
             collection_name=collection_name,
-            vectors_config=models.VectorParams(
-                size=1536,
-                distance=models.Distance.COSINE,
-            ),
-            hnsw_config=models.HnswConfigDiff(m=16, ef_construct=128),
+            vectors_config={
+                "dense": models.VectorParams(
+                    size=1536,
+                    distance=models.Distance.COSINE
+                )
+            },
+            sparse_vectors_config={
+                "bm25": models.SparseVectorParams(
+                    modifier=models.Modifier.IDF
+                )
+            }
         )
         result["collection_status"] = "created"
     except UnexpectedResponse as e:
@@ -38,6 +44,6 @@ def get_collections(client: QdrantClient) -> list:
 
 if __name__ == "__main__":
     qc = QdrantClient(url=settings.qdrant_url)
-    print(ensure_collection(qc, "testing_2"))
+    print(ensure_collection(qc, "test_hybrid"))
     print(delete_collection(qc, "testing_2"))
     print(get_collections(qc))

@@ -1,5 +1,5 @@
 from typing import Dict, Any
-from qdrant_client import QdrantClient
+from qdrant_client import QdrantClient, models
 from langchain_openai import OpenAIEmbeddings
 from app.core.settings import settings
 
@@ -8,7 +8,7 @@ embeddings = OpenAIEmbeddings(
     api_key=settings.openai_api_key
 )
 
-async def dense_retrieve(
+async def hydrid_retiever(
         client: QdrantClient,
         query: Any,
         collection_name: str,
@@ -29,6 +29,21 @@ async def dense_retrieve(
     query_embedding = await embeddings.aembed_query(query)
     return client.query_points(
         collection_name=collection_name,
-        query=query_embedding,
+        prefetch=[
+            models.Prefetch(
+                query=query_embedding,
+                using="dense",
+                limit=int(top_k*2.5),
+            ),
+            models.Prefetch(
+                query=models.Document(
+                    text=query,
+                    model="Qdrant/bm25"
+                ),
+                using="bm25",
+                limit=int(top_k*2.5),
+            )
+        ],
+        query=models.FusionQuery(fusion=models.Fusion.RRF),
         limit=top_k
     )
