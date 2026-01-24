@@ -36,7 +36,7 @@ services:
   fastapi:
     build:
       context: .
-      target: fastapi
+      dockerfile: Dockerfile.fastapi
     container_name: fastapi
     command: gunicorn app.main:app --workers 1 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
     ports:
@@ -54,7 +54,7 @@ services:
   celery_worker:
     build:
       context: .
-      target: celery
+      dockerfile: Dockerfile.celery
     container_name: celery_worker
     command: celery -A app.services.ingestion.ingestion_task.celery_app worker --loglevel=info --concurrency=1
     env_file:

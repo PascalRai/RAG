@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from qdrant_client import QdrantClient
 from langchain.tools import tool, ToolRuntime
 
-from app.core.utils.retriever_utils import dense_retrieve
+from app.core.utils.retriever_utils import hydrid_retiever
 
 @dataclass
 class RetrievalContext:
@@ -25,7 +25,7 @@ def retrieve_context(
     client = runtime.context.client
 
     async def single_retrieve(q):
-        response = await dense_retrieve(
+        response = await hydrid_retiever(
             client=client, 
             query=q, 
             collection_name=collection_name
