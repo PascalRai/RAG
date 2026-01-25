@@ -1,11 +1,16 @@
 import streamlit as st
 import requests
-import re
 
 # Base URL for your FastAPI app
 BASE_URL = "http://localhost:8000/api/v1"  # Adjust if needed
 
 st.title("RAG Chat App")
+
+# Ensure session state defaults
+if "indexes" not in st.session_state:
+    st.session_state["indexes"] = []
+if "messages" not in st.session_state:
+    st.session_state["messages"] = []
 
 # Sidebar for Index Management
 st.sidebar.header("Index Management")
@@ -16,7 +21,7 @@ if st.sidebar.button("Refresh Indexes"):
         response = requests.get(f"{BASE_URL}/indexes")
         if response.status_code == 200:
             indexes = response.json().get("indexes", [])
-            st.session_state["indexes"] = indexes  # Store in session
+            st.session_state["indexes"] = indexes
             st.sidebar.write("Available Indexes:")
             for idx in indexes:
                 st.sidebar.write(f"- {idx}")
@@ -49,58 +54,41 @@ tab1, tab2 = st.tabs(["Chat", "Retrieval"])
 with tab1:
     st.header("Chat with RAG")
 
-    # Session state for chat history
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
-
-    # Select collection (fixed placement)
+    # Select collection
     collection_name = st.selectbox("Select Collection", ["test_01"] + st.session_state.get("indexes", []), key="collection")
 
     # Display chat history
-    for message in st.session_state.messages:
+    for message in st.session_state["messages"]:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
-    # Chat input (at bottom)
+    # Chat input
     query = st.chat_input("Ask a question...")
 
     if query:
-        # Add user message
-        st.session_state.messages.append({"role": "user", "content": query})
+        # Add and display user message
+        st.session_state["messages"].append({"role": "user", "content": query})
         with st.chat_message("user"):
             st.markdown(query)
 
-        # Stream response
-        with st.chat_message("assistant"):
-            response_placeholder = st.empty()
-            full_response = ""
-            try:
-                with requests.post(
-                    f"{BASE_URL}/rag/stream",
-                    params={"query": query, "collection_name": collection_name},
-                    stream=True
-                ) as r:
-                    if r.status_code == 200:
-                        for line in r.iter_lines():
-                            if line:
-                                line = line.decode('utf-8')
-                                if line.startswith("data: "):
-                                    data = line[6:]  # Remove "data: "
-                                    # Extract content value using regex
-                                    match = re.search(r"content='([^']*)'", data)
-                                    if match:
-                                        content = match.group(1)
-                                        if content:
-                                            full_response += content
-                                            response_placeholder.markdown(full_response)
-                    else:
-                        st.error("Failed to get response")
-            except Exception as e:
-                st.error(f"Error: {e}")
-
-        # Add assistant response to history
-        if full_response:
-            st.session_state.messages.append({"role": "assistant", "content": full_response})
+        # Non-streaming request to /rag
+        try:
+            resp = requests.post(
+                f"{BASE_URL}/rag",
+                params={"query": query, "collection_name": collection_name},
+                data=""  # endpoint expects empty body per example
+            )
+            if resp.status_code == 200:
+                resp_json = resp.json()
+                assistant_text = resp_json.get("response", "")
+                with st.chat_message("assistant"):
+                    st.markdown(assistant_text)
+                if assistant_text:
+                    st.session_state["messages"].append({"role": "assistant", "content": assistant_text})
+            else:
+                st.error(f"Failed to get response ({resp.status_code})")
+        except Exception as e:
+            st.error(f"Error: {e}")
 
 with tab2:
     st.header("Retrieval Test")

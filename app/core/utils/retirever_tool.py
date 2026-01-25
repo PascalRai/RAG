@@ -1,5 +1,5 @@
 import asyncio
-from typing import Union, List
+from typing import List
 from dataclasses import dataclass
 from qdrant_client import QdrantClient
 from langchain.tools import tool, ToolRuntime
@@ -13,17 +13,16 @@ class RetrievalContext:
 
 @tool
 def retrieve_context(
-    query: Union[str, List[str]], 
+    query: List[str], 
     runtime: ToolRuntime[RetrievalContext]
 ):
     """
     Retrieve information to help answer a query.
-    `query` can be a single query (str) or a list of sub-queries (List[str]).
+    `query` is a list of sub-queries (List[str]).
     If a list is provided, retrievals will be run in parallel and results returned as a list.
     """
     collection_name = runtime.context.collection_name
     client = runtime.context.client
-
     async def single_retrieve(q):
         response = await hydrid_retiever(
             client=client, 
