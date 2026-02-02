@@ -32,11 +32,13 @@ prompt = (
 """
 )
 
+memory = InMemorySaver()
+
 def get_rag_agent():
     """Returns a configured RAG agent instance."""
     return create_agent(
         model,
         tools,
         system_prompt=prompt,
-        checkpointer=InMemorySaver()
+        checkpointer=memory
     )
